@@ -15,7 +15,7 @@
  */
 
 // Include the class
-include('GeoSOcialAdmin.php');
+include('GeoSocialAdmin.php');
 
 // instantiate the plugin
 $geo_social_admin = new Geo_Social_Admin;
