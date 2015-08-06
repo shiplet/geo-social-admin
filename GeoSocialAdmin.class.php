@@ -5,16 +5,6 @@ class Geo_Social_Admin {
     private $table_name_api = 'geo_social_admin_api';
     private $table_name_social = 'geo_social_admin_social';
     
-    public function __construct()
-    {
-
-    }
-
-    public function success()
-    {
-        echo 'success';
-    }
-
     public function tableCreate()
     {
 
