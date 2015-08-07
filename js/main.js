@@ -8,5 +8,5 @@ function addApiField() {
 };
 
 function removeApiField() {
-    jQuery()
+    jQuery();
 };
