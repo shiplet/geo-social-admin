@@ -24,11 +24,20 @@ $geo_social_admin = new Geo_Social_Admin;
 
 // trigger plugin to run when admin_menu does
 add_action('admin_menu', array($geo_social_admin, 'adminOptions'));
+add_action('admin_menu', 'add_jq_script');
 add_action('admin_head', array($geo_social_admin, 'adminHead'));
+
 
 // trigger plugin to create table on activation
 register_activation_hook( __FILE__, array($geo_social_admin, 'tableCreate'));
 register_activation_hook( __FILE__, array($geo_social_admin, 'dbInsert'));
+
+// register scripts
+function add_jq_script() {
+    wp_register_script('geo_social_admin_script', plugins_url('/geo-social-admin/js/main.js'), array('jquery'), null, true);
+    wp_enqueue_script('geo_social_admin_script');    
+}
+
 
 global $wpdb;
 
@@ -50,7 +59,7 @@ switch($_SERVER['REQUEST_METHOD'])
 	);
     }
 
-    if ($_POST['social_source']) {      
+    if ($_POST['social_source']) {
 	$wpdb->insert(
 	    $table_name_social,
 		array(
@@ -63,15 +72,11 @@ switch($_SERVER['REQUEST_METHOD'])
 		)
 	);
     }
-    
+
     header("Location: " . $_SERVER['REQUEST_URI']);
-    exit();    
+    exit();
     break;
-    
-    case 'GET': 
+
+    case 'GET':
     break;
 }
-
-
-
-

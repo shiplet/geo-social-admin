@@ -99,16 +99,17 @@ UNIQUE KEY id (id)
     }
 
     /*
-       /////////////////////////
-       /// LOAD CUSTOM CSS ///
-       ///////////////////////
+       //////////////////////////////
+       /// LOAD CUSTOM CSS & JS ///
+       ////////////////////////////
      */
 
     public function adminHead()
     {
 	$siteurl = get_option('siteurl');
-	$url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) .  '/css/main.css';
-	echo '<link rel="stylesheet" type="text/css" href="' . $url . '" /> \n';
+	$css_url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) .  '/css/main.css';
+	
+	echo '<link rel="stylesheet" type="text/css" href="' . $css_url . '" />';	
     }
 
     /*
@@ -148,29 +149,29 @@ UNIQUE KEY id (id)
 		'geo_social_admin' // Which page to attach to, should be slug of add_options_page
         );
 
-	add_settings_field(
-	    'api_source',
-		'API Source',
-		array($this, 'api_source_field'),
-		'geo_social_admin',
-		'api_fields'
-	);
+	/* add_settings_field(
+	   'api_source',
+	   'API Source',
+	   array($this, 'api_source_field'),
+	   'geo_social_admin',
+	   'api_fields'
+	   );
 
-	add_settings_field(
-	    'api_key',
-		'API Key',
-		array($this, 'api_key_field'),
-		'geo_social_admin',
-		'api_fields'
-	);
+	   add_settings_field(
+	   'api_key',
+	   'API Key',
+	   array($this, 'api_key_field'),
+	   'geo_social_admin',
+	   'api_fields'
+	   );
 
-	add_settings_field(
-	    'api_secret',
-		'API Secret',
-		array($this, 'api_secret_field'),
-		'geo_social_admin',
-		'api_fields'
-	);
+	   add_settings_field(
+	   'api_secret',
+	   'API Secret',
+	   array($this, 'api_secret_field'),
+	   'geo_social_admin',
+	   'api_fields'
+	   ); */
 	
 
 	// SOCIAL fields
@@ -222,15 +223,6 @@ UNIQUE KEY id (id)
 		'social_fields'
 	);
 
-
-	// DISPLAY fields
-
-	add_settings_section(
-	    'display_fields',
-		'Currently Logged Information',
-		array($this, 'display_fields_section'),
-		'geo_social_admin'
-	);
     }
 
     /*
@@ -242,12 +234,12 @@ UNIQUE KEY id (id)
     public function render_social_options()
     {
 ?>
-  <form action="" method="post">
+  <form method="post">
     <?php settings_fields('geo_social_admin'); ?>
     <?php
     do_settings_sections('geo_social_admin');
     ?>
-    <input type="submit"/>
+    <input type="submit" action="" value="Save Changes"/>
   </form>
 <?php
     }
@@ -261,17 +253,19 @@ UNIQUE KEY id (id)
 public function API_fields_section()
 {
     echo '<p> Some test text to see what\'s going on </p>';
+    echo '
+<section>
+<div class="api-box">
+</div>
+<div class="add-api-button" onclick="addApiField()">Add API</div>
+</section>
+';
 }
 
 public function social_platforms_section()
 {
     echo '<p> Some additional test text, you know for good measure</p>';
 }
-
-/*public function display_fields_section()
-{
-    
-}*/
 
 /*
    ////////////////////
