@@ -239,7 +239,7 @@ UNIQUE KEY id (id)
     <?php
     do_settings_sections('geo_social_admin');
     ?>
-    <input type="submit" action="" value="Save Changes"/>
+    <input class="add-api-button" type="submit" action="" value="Save Changes"/>
   </form>
 <?php
     }
