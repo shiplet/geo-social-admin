@@ -64,7 +64,7 @@ switch($_SERVER['REQUEST_METHOD'])
 	!isset($_POST['admin_api_valid'])
 	&& $_POST[$admin_api]['api_source']
 	&& $_POST[$admin_api]['api_key']
-	&& $_POST[$admin_api]['api_key']
+	&& $_POST[$admin_api]['api_secret']
     ) {
 	$wpdb->update(
 	    $table_name_api,
@@ -80,10 +80,9 @@ switch($_SERVER['REQUEST_METHOD'])
 	);
     }
 
-
     if ($_POST['admin_social_valid'] === 'true') {
 	foreach($_POST[$admin_social] as $source) {
-	    $pos = strpos($source['social_url'], 'rss');	    
+	    $pos = strpos($source['social_url'], 'rss');
 
 	    if ($pos !== false)
 	    {
@@ -92,7 +91,7 @@ switch($_SERVER['REQUEST_METHOD'])
 	    {
 		$source['social_content_type'] = 'application/json';
 	    }
-	    
+
 	    $wpdb->insert(
 		$table_name_social,
 		    array(
@@ -104,7 +103,36 @@ switch($_SERVER['REQUEST_METHOD'])
 			    'social_geo' => $source['social_geo']
 		    )
 	    );
-	} 
+	}
+    } elseif (
+	!isset($_POST['admin_social_valid'])
+	&& $_POST[$admin_social]['social_source']
+	&& $_POST[$admin_social]['social_url']
+	&& $_POST[$admin_social]['social_title']
+    ) {
+	$pos = strpos($_POST[$admin_social]['social_url'], 'rss');
+
+	if ($pos !== false)
+	{
+	    $_POST[$admin_social]['social_content_type'] = 'application/xml+rss';
+	} else
+	{
+	    $_POST[$admin_social]['social_content_type'] = 'application/json';
+	}
+	
+	$wpdb->update(
+	    $table_name_social,
+		array(
+		    'time' => current_time('mysql'),
+			'social_source' => $_POST[$admin_social]['social_source'],
+			'social_url' => $_POST[$admin_social]['social_url'],
+			'social_title' => $_POST[$admin_social]['social_title'],
+			'social_content_type' => $_POST[$admin_social]['social_content_type'],
+		),
+		array(
+		    'id' => $_POST[$admin_social]['social_id']
+		)
+	);
     }
 
 

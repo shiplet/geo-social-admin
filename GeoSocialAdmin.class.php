@@ -221,6 +221,7 @@ public function api_list()
 	echo '<p><span>Source:</span> ' . $i['social_source'] . '</p>';
 	echo '<p><span>URL:</span> ' . $i['social_url'] . '</p>';
 	echo '<p><span>Name:</span> ' . $i['social_title'] . '</p>';
+	echo '<input type="hidden" data-model="social" data-index="' . $i['id'] . '"/>';
 	echo '<a href="#" class="apiEdit">Edit</a> | <a href="#" class="apiDelete">Delete</a>';
 	echo '</div>';
     }
