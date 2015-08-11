@@ -138,6 +138,7 @@ UNIQUE KEY id (id)
 		array($this, 'API_fields_section'), // Function that outputs stuff to the page
 		'geo_social_admin' // Which page to attach to, should be slug of add_options_page
         );
+	
 
 	// SOCIAL Settings Section
 
@@ -145,6 +146,14 @@ UNIQUE KEY id (id)
 	    'social_fields',
 		'Social Platforms',
 		array($this, 'social_platforms_section'),
+		'geo_social_admin'
+	);
+
+	// Current Settings
+	add_settings_section(
+	    'current_settings',
+		'Currently registered APIs and Social Feeds',
+		array($this, 'api_list'),
 		'geo_social_admin'
 	);
 
@@ -177,26 +186,45 @@ UNIQUE KEY id (id)
 
 public function API_fields_section()
 {
-    echo '<p> Some test text to see what\'s going on </p>';
-    echo '
-<section>
-<div class="add-api-button" onclick="addApiField()">Add an API</div>
-<div class="api-box">
-</div>
-</section>
-';
+    echo '<section><div class="add-api-button" onclick="addApiField()">Add an API</div><div class="api-box"></div></section>';
 }
 
 public function social_platforms_section()
 {
-    echo '<p> Some additional test text, you know, for good measure. </p>';
-    echo '
-<section>
-<div class="add-api-button" onclick="addSocialField()">Add a Social Feed</div>
-<div class="social-box">
-</div>
-</section>
-';
+    echo '<section><div class="add-api-button" onclick="addSocialField()">Add a Social Feed</div><div class="social-box"></div></section>';
+}
+
+public function api_list()
+{
+    $api = $this->get_api_fields();
+    echo '<div class="api-results">';
+    echo '<div class="api-results-box">';
+    echo '<h3 class="geo-admin-section-header">APIs</h3>';
+    foreach($api as $i) {
+	$key = substr($i['api_key'], -4);
+	$secret = substr($i['api_secret'], -4);
+	echo '<div class="geo-admin-section-body">';
+	echo '<p><span>Source:</span> ' . $i['api_source'] . '</p>';
+	echo '<p><span>Key:</span> *** ' . $key . '</p>';
+	echo '<p><span>Secret:</span> *** ' . $secret . '</p>';
+	echo '<a href="#" class="apiEdit">Edit</a> | <a class="apiDelete" href="#">Delete</a>';
+	echo '</div>';
+    }
+    echo '</div>';
+
+    $social_feed = $this->get_social_fields();
+    echo '<div class="api-results-box">';
+    echo '<h3 class="geo-admin-section-header">Social Feeds</h3>';
+    foreach($social_feed as $i) {
+	echo '<div class="geo-admin-section-body">';
+	echo '<p><span>Source:</span> ' . $i['social_source'] . '</p>';
+	echo '<p><span>URL:</span> ' . $i['social_url'] . '</p>';
+	echo '<p><span>Title:</span> ' . $i['social_title'] . '</p>';
+	echo '<a href="#">Edit</a> | <a href="#">Delete</a>';
+	echo '</div>';
+    }
+    echo '</div>';
+    echo '</div>';
 }
 
 /*
@@ -208,13 +236,13 @@ public function social_platforms_section()
 private function get_api_fields()
 {
     global $wpdb;
-    return $wpdb->get_row("SELECT * FROM $this->table_name_api WHERE ID = 1", ARRAY_A);
+    return $wpdb->get_results("SELECT * FROM $this->table_name_api WHERE ID > 1", ARRAY_A);
 }
 
 private function get_social_fields()
 {
     global $wpdb;
-    return $wpdb->get_row("SELECT * FROM $this->table_name_social WHERE ID = 1", ARRAY_A);
+    return $wpdb->get_results("SELECT * FROM $this->table_name_social WHERE ID > 1", ARRAY_A);
 }
 
 }

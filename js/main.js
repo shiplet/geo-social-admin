@@ -61,4 +61,10 @@ function removeSocialField(input) {
  type=""
  value=""
 />
-*/
+ */
+
+jQuery('.apiEdit').on('click', function(e){
+    e.preventDefault();
+    var x = jQuery(this).parent();
+    console.log(jQuery(x));
+});

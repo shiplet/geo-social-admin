@@ -182,3 +182,40 @@
 .api-item-close:active, .api-item-close:focus {
   background: rgb(255, 150, 150);
 }
+
+
+.api-results-box {
+  border: 1px solid #bbb;
+  width: 30%;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 15px;
+}
+
+.geo-admin-section-header {
+  background-color: #dfdfdf;
+  height: 100%;
+  padding: 10px 0 10px 10px;
+  margin-top: 0;
+  border-bottom: 1px solid #bbb;
+}
+
+.geo-admin-section-body {
+  box-sizing: border-box;
+  padding: 0 10px;
+  word-wrap: break-word;  
+}
+
+.geo-admin-section-body:not(:last-child) {
+  border-bottom: 1px solid #bbb;
+}
+
+.geo-admin-section-body p span {
+  font-weight: bold;
+}
+
+.geo-admin-section-body a {
+  display: inline-block;
+  margin-bottom: 5px;
+}
