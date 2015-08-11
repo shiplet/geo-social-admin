@@ -78,6 +78,13 @@ switch($_SERVER['REQUEST_METHOD'])
 		    'id' => $_POST[$admin_api]['api_id']
 		)
 	);
+    } elseif (isset($_POST[$admin_api]['delete_item']) && $_POST[$admin_api]['delete_item'] === 'true') {
+	$wpdb->delete(
+	    $table_name_api,
+		array(
+		    'id' => $_POST[$admin_api]['delete_this_item']
+		)
+	);
     }
 
     if ($_POST['admin_social_valid'] === 'true') {
@@ -131,6 +138,13 @@ switch($_SERVER['REQUEST_METHOD'])
 		),
 		array(
 		    'id' => $_POST[$admin_social]['social_id']
+		)
+	);
+    } elseif (isset($_POST[$admin_social]['delete_item']) && $_POST[$admin_social]['delete_item'] === 'true') {
+	$wpdb->delete(
+	    $table_name_social,
+		array(
+		    'id' => $_POST[$admin_social]['delete_this_item']
 		)
 	);
     }

@@ -259,3 +259,29 @@
   content: ' *';
   color: red;
 }
+
+.delete {
+  text-align: center;
+  padding-top: 10px;
+}
+
+.cancelButton {
+  font-size: 11px;
+  padding-bottom: 3px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 2px;
+  border: 1px solid #dfdfdf;
+  display: inline-block;
+  margin-left: 10px;
+  border-radius: 4px;
+}
+
+.cancelButton:hover {
+  cursor: pointer;
+  background-color: #dfdfdf;
+}
+
+.cancelButton:active, .cancelButton:focus {
+  background-color: rgb(250,250,250);
+}
