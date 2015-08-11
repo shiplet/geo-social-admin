@@ -17,8 +17,6 @@
 // Include the class
 include_once dirname(__FILE__) . '/GeoSocialAdmin.class.php';
 
-error_log('The geosocial admin plugin');
-
 // instantiate the plugin
 $geo_social_admin = new Geo_Social_Admin;
 
@@ -35,7 +33,7 @@ register_activation_hook( __FILE__, array($geo_social_admin, 'dbInsert'));
 // register scripts
 function add_jq_script() {
     wp_register_script('geo_social_admin_script', plugins_url('/geo-social-admin/js/main.js'), array('jquery'), null, true);
-    wp_enqueue_script('geo_social_admin_script');    
+    wp_enqueue_script('geo_social_admin_script');
 }
 
 
@@ -47,8 +45,8 @@ $table_name_social = 'geo_social_admin_social';
 switch($_SERVER['REQUEST_METHOD'])
 {
     case 'POST':
-    if ($_POST['geo_social_valid'] === 'true') { 
-	foreach ($_POST['geo_social'] as $source) {
+    if ($_POST['admin_api_valid'] === 'true') {
+	foreach ($_POST['admin_api'] as $source) {
 	    $wpdb->insert(
 		$table_name_api,
 		    array(
@@ -59,22 +57,34 @@ switch($_SERVER['REQUEST_METHOD'])
 		    )
 	    );
 	}
+    }
 
-	
-	/*
-	   if ($_POST['social_source']) {
-	   $wpdb->insert(
-	   $table_name_social,
-	   array(
-	   'time' => current_time('mysql'),
-	   'social_source' => $_POST['social_source'],
-	   'social_content_type' => $_POST['social_content_type'],
-	   'social_title' => $_POST['social_title'],
-	   'social_geo' => $_POST['social_geo'],
-	   'social_url' => $_POST['social_url']
-	   )
-	   );*/
-    }  
+
+    if ($_POST['admin_social_valid'] === 'true') {
+	foreach($_POST['admin_social'] as $source) {
+	    $pos = strpos($source['social_url'], 'rss');	    
+
+	    if ($pos !== false)
+	    {
+		$source['social_content_type'] = 'application/xml+rss';
+	    } else
+	    {
+		$source['social_content_type'] = 'application/json';
+	    }
+	    
+	    $wpdb->insert(
+		$table_name_social,
+		    array(
+			'time' => current_time('mysql'),
+			    'social_source' => $source['social_source'],
+			    'social_title' => $source['social_title'],
+			    'social_url' => $source['social_url'],
+			    'social_content_type' => $source['social_content_type'],
+			    'social_geo' => $source['social_geo']
+		    )
+	    );
+	} 
+    }
 
 
     header("Location: " . $_SERVER['REQUEST_URI']);
