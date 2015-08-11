@@ -42,11 +42,14 @@ global $wpdb;
 $table_name_api = 'geo_social_admin_api';
 $table_name_social = 'geo_social_admin_social';
 
+$admin_api = 'admin_api';
+$admin_social = 'admin_social';
+
 switch($_SERVER['REQUEST_METHOD'])
 {
     case 'POST':
     if ($_POST['admin_api_valid'] === 'true') {
-	foreach ($_POST['admin_api'] as $source) {
+	foreach ($_POST[$admin_api] as $source) {
 	    $wpdb->insert(
 		$table_name_api,
 		    array(
@@ -57,11 +60,29 @@ switch($_SERVER['REQUEST_METHOD'])
 		    )
 	    );
 	}
+    } elseif (
+	!isset($_POST['admin_api_valid'])
+	&& $_POST[$admin_api]['api_source']
+	&& $_POST[$admin_api]['api_key']
+	&& $_POST[$admin_api]['api_key']
+    ) {
+	$wpdb->update(
+	    $table_name_api,
+		array(
+		    'time' => current_time('mysql'),
+			'api_source' => $_POST[$admin_api]['api_source'],
+			'api_key' => $_POST[$admin_api]['api_key'],
+			'api_secret' => $_POST[$admin_api]['api_secret']
+		),
+		array(
+		    'id' => $_POST[$admin_api]['api_id']
+		)
+	);
     }
 
 
     if ($_POST['admin_social_valid'] === 'true') {
-	foreach($_POST['admin_social'] as $source) {
+	foreach($_POST[$admin_social] as $source) {
 	    $pos = strpos($source['social_url'], 'rss');	    
 
 	    if ($pos !== false)

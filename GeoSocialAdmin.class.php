@@ -207,6 +207,7 @@ public function api_list()
 	echo '<p><span>Source:</span> ' . $i['api_source'] . '</p>';
 	echo '<p><span>Key:</span> *** ' . $key . '</p>';
 	echo '<p><span>Secret:</span> *** ' . $secret . '</p>';
+	echo '<input type="hidden" data-model="api" data-index="' . $i['id'] . '"/>';
 	echo '<a href="#" class="apiEdit">Edit</a> | <a class="apiDelete" href="#">Delete</a>';
 	echo '</div>';
     }
@@ -219,8 +220,8 @@ public function api_list()
 	echo '<div class="geo-admin-section-body">';
 	echo '<p><span>Source:</span> ' . $i['social_source'] . '</p>';
 	echo '<p><span>URL:</span> ' . $i['social_url'] . '</p>';
-	echo '<p><span>Title:</span> ' . $i['social_title'] . '</p>';
-	echo '<a href="#">Edit</a> | <a href="#">Delete</a>';
+	echo '<p><span>Name:</span> ' . $i['social_title'] . '</p>';
+	echo '<a href="#" class="apiEdit">Edit</a> | <a href="#" class="apiDelete">Delete</a>';
 	echo '</div>';
     }
     echo '</div>';
