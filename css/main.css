@@ -177,16 +177,17 @@
   cursor: pointer;
   background: red;
   color: white;
+  border: 1px solid red;
 }
 
 .api-item-close:active, .api-item-close:focus {
   background: rgb(255, 150, 150);
+  border: 1px solid rgb(255, 150, 150);
 }
 
 .update {
   right: -12px;
 }
-
 
 .api-results-box {
   border: 1px solid #bbb;
@@ -253,6 +254,25 @@
 
 .apiEditBox form input[type=submit] {
   margin-top: 10px;
+  border: 1px solid rgb(255,120,120);
+  font-size: 11px;
+  padding: 6px 8px;
+  background-color: rgb(255,120,120);
+  border-radius: 4px;
+  line-height: 15px;
+}
+
+.apiEditBox form input[type=submit]:hover {
+  outline: 0;
+  background-color: rgb(255,160,160);
+  border: 1px solid rgb(255,160,160);
+  cursor: pointer;
+}
+
+.apiEditBox form input[type=submit]:active, .apiEditBox form input[type=submit]:focus {
+  outline: 0;
+  background-color: rgb(255,200,200);
+  border: 1px solid rgb(255,200,200);
 }
 
 .apiEditBox form label:after {
@@ -267,14 +287,12 @@
 
 .cancelButton {
   font-size: 11px;
-  padding-bottom: 3px;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 2px;
-  border: 1px solid #dfdfdf;
+  padding: 6px 8px;
+  border: 1px solid rgb(175,175,175);
   display: inline-block;
-  margin-left: 10px;
+  margin-left: 90px;
   border-radius: 4px;
+  line-height: 15px;
 }
 
 .cancelButton:hover {
