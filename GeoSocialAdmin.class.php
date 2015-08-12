@@ -2,8 +2,53 @@
 
 class Geo_Social_Admin {
 
-    protected $table_name_api = 'geo_social_admin_api';
-    protected $table_name_social = 'geo_social_admin_social';
+    protected $table_api = 'geo_social_admin_api';
+    protected $table_social = 'geo_social_admin_social';
+
+    /*
+       ///////////////////////////
+       ///  UTILITY FUNCTIONS ///
+       //////////////////////////
+     */
+
+    public function get_api_table() {
+	global $wpdb;
+	$table = $wpdb->prefix . $this->table_api; 
+	return $table;
+    }
+
+    public function get_social_table() {
+	global $wpdb;
+	$table = $wpdb->prefix . $this->table_social;
+	return $table;
+    }
+
+    public function get_geo_id_num() {
+	global $wpdb;
+	return explode('_',$wpdb->prefix)[1];
+    }
+
+    public function get_base_wp_prefix() {
+	global $wpdb;
+	$hold = explode('_', $wpdb->prefix)[0];
+	return $hold . '_';
+    }
+
+    public function get_geo_tag() {
+	global $wpdb;
+	$geo = $this->get_geo_id_num();
+	if (!$geo) {
+	    $geo = 1;
+	}
+	$prefix = $this->get_base_wp_prefix();
+
+	$hold = $wpdb->get_row('SELECT path FROM ' . $prefix . 'blogs WHERE blog_id = ' . $geo);
+	$path = $hold->path;
+
+	$fixedPath = explode('/', $path)[1];
+
+	return $fixedPath;
+    }
 
     /*
        /////////////////////
@@ -19,9 +64,9 @@ class Geo_Social_Admin {
 
 	require_once( $path . '/wp-admin/includes/upgrade.php');
 
-	$table_name_api = 'geo_social_admin_api';
-	$table_name_social = 'geo_social_admin_social';
-
+	$table_name_api = $this->get_api_table();
+	$table_name_social = $this->get_social_table();
+	
 	$charset_collate = $wpdb->get_charset_collate();
 
 	$api = "CREATE TABLE $table_name_api (
@@ -58,12 +103,15 @@ UNIQUE KEY id (id)
     {
 	global $wpdb;
 
-	$default_check_api = $wpdb->get_row("SELECT * FROM $this->table_name_api WHERE id=1");
-	$default_check_social = $wpdb->get_row("SELECT * FROM $this->table_name_social WHERE id=1");
+	$table_name_api = $this->get_api_table();
+	$table_name_social = $this->get_social_table();
+
+
+	$default_check_social = $wpdb->get_row("SELECT * FROM $table_name_social WHERE id=1");
 
 	if (!$default_check_api) {
 	    $wpdb->insert(
-		$this->table_name_api,
+		$table_name_api,
 		    array(
 			'time' => current_time('mysql'),
 			    'api_source' => 'Which social media source you\'re using',
@@ -75,7 +123,7 @@ UNIQUE KEY id (id)
 
 	if (!$default_check_social) {
 	    $wpdb->insert(
-		$this->table_name_social,
+		$table_name_social,
 		    array(
 			'time' => current_time('mysql'),
 			    'social_source' => 'Which social media source you\'re using',
@@ -138,7 +186,7 @@ UNIQUE KEY id (id)
 		array($this, 'API_fields_section'), // Function that outputs stuff to the page
 		'geo_social_admin' // Which page to attach to, should be slug of add_options_page
         );
-	
+
 
 	// SOCIAL Settings Section
 
@@ -238,13 +286,15 @@ public function api_list()
 private function get_api_fields()
 {
     global $wpdb;
-    return $wpdb->get_results("SELECT * FROM $this->table_name_api WHERE ID > 1", ARRAY_A);
+    $table_name_api = $this->get_api_table();
+    return $wpdb->get_results("SELECT * FROM $table_name_api WHERE ID > 1", ARRAY_A);
 }
 
 private function get_social_fields()
 {
     global $wpdb;
-    return $wpdb->get_results("SELECT * FROM $this->table_name_social WHERE ID > 1", ARRAY_A);
+    $table_name_social = $this->get_social_table();
+    return $wpdb->get_results("SELECT * FROM $table_name_social WHERE ID > 1", ARRAY_A);
 }
 
 }

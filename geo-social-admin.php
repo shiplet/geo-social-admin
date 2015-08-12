@@ -20,6 +20,12 @@ include_once dirname(__FILE__) . '/GeoSocialAdmin.class.php';
 // instantiate the plugin
 $geo_social_admin = new Geo_Social_Admin;
 
+// Variable declarations
+global $wpdb;
+$admin_geo_tag = $geo_social_admin->get_geo_tag();
+$admin_api = 'admin_api';
+$admin_social = 'admin_social';
+
 // trigger plugin to run when admin_menu does
 add_action('admin_menu', array($geo_social_admin, 'adminOptions'));
 add_action('admin_menu', 'add_jq_script');
@@ -36,18 +42,13 @@ function add_jq_script() {
     wp_enqueue_script('geo_social_admin_script');
 }
 
-
-global $wpdb;
-
-$table_name_api = 'geo_social_admin_api';
-$table_name_social = 'geo_social_admin_social';
-
-$admin_api = 'admin_api';
-$admin_social = 'admin_social';
-
+// Handle POST and GET requests
 switch($_SERVER['REQUEST_METHOD'])
-{
+{        
     case 'POST':
+    $table_name_api = $geo_social_admin->get_api_table();
+    $table_name_social = $geo_social_admin->get_social_table();
+
     if ($_POST['admin_api_valid'] === 'true') {
 	foreach ($_POST[$admin_api] as $source) {
 	    $wpdb->insert(
@@ -62,7 +63,7 @@ switch($_SERVER['REQUEST_METHOD'])
 	}
     } elseif (
 	!isset($_POST['admin_api_valid'])
-	&& $_POST[$admin_api]['api_source']
+	    && $_POST[$admin_api]['api_source']
 	&& $_POST[$admin_api]['api_key']
 	&& $_POST[$admin_api]['api_secret']
     ) {
@@ -107,13 +108,13 @@ switch($_SERVER['REQUEST_METHOD'])
 			    'social_title' => $source['social_title'],
 			    'social_url' => $source['social_url'],
 			    'social_content_type' => $source['social_content_type'],
-			    'social_geo' => $source['social_geo']
+			    'social_geo' => $admin_geo_tag
 		    )
 	    );
 	}
     } elseif (
 	!isset($_POST['admin_social_valid'])
-	&& $_POST[$admin_social]['social_source']
+	    && $_POST[$admin_social]['social_source']
 	&& $_POST[$admin_social]['social_url']
 	&& $_POST[$admin_social]['social_title']
     ) {
