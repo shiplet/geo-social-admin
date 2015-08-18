@@ -275,7 +275,7 @@
   border: 1px solid rgb(255,200,200);
 }
 
-.apiEditBox form label:after {
+.geo-social-admin-label:after, .apiEditBox form label:after {
   content: ' *';
   color: red;
 }
@@ -303,3 +303,31 @@
 .cancelButton:active, .cancelButton:focus {
   background-color: rgb(250,250,250);
 }
+
+.bold {
+  font-weight: bold;
+}
+
+.styled-select {
+  border: 1px solid #dfdfdf;
+  width: 253px;
+}
+
+.first-label {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

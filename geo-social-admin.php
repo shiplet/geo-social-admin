@@ -44,111 +44,139 @@ function add_jq_script() {
 
 // Handle POST and GET requests
 switch($_SERVER['REQUEST_METHOD'])
-{        
+{
     case 'POST':
     $table_name_api = $geo_social_admin->get_api_table();
     $table_name_social = $geo_social_admin->get_social_table();
 
     if ($_POST['admin_api_valid'] === 'true') {
-	foreach ($_POST[$admin_api] as $source) {
-	    $wpdb->insert(
+	$api = $_POST['admin_api'];
+	$social = $_POST['admin_social'];
+
+	$pos = strpos($social['social_url'], 'rss');
+
+	if ($pos !== false) {
+		$social['social_content_type'] = 'application/xml+rss';
+	} else {
+		$social['social_content_type'] = 'application/json';
+	}
+
+	$wpdb->insert(
 		$table_name_api,
-		    array(
+		array(
 			'time' => current_time('mysql'),
-			    'api_source' => $source['api_source'],
-			    'api_key' => $source['api_key'],
-			    'api_secret' => $source['api_secret']
-		    )
-	    );
-	}
-    } elseif (
-	!isset($_POST['admin_api_valid'])
-	    && $_POST[$admin_api]['api_source']
-	&& $_POST[$admin_api]['api_key']
-	&& $_POST[$admin_api]['api_secret']
-    ) {
-	$wpdb->update(
-	    $table_name_api,
-		array(
-		    'time' => current_time('mysql'),
-			'api_source' => $_POST[$admin_api]['api_source'],
-			'api_key' => $_POST[$admin_api]['api_key'],
-			'api_secret' => $_POST[$admin_api]['api_secret']
-		),
-		array(
-		    'id' => $_POST[$admin_api]['api_id']
-		)
-	);
-    } elseif (isset($_POST[$admin_api]['delete_item']) && $_POST[$admin_api]['delete_item'] === 'true') {
-	$wpdb->delete(
-	    $table_name_api,
-		array(
-		    'id' => $_POST[$admin_api]['delete_this_item']
-		)
-	);
-    }
-
-    if ($_POST['admin_social_valid'] === 'true') {
-	foreach($_POST[$admin_social] as $source) {
-	    $pos = strpos($source['social_url'], 'rss');
-
-	    if ($pos !== false)
-	    {
-		$source['social_content_type'] = 'application/xml+rss';
-	    } else
-	    {
-		$source['social_content_type'] = 'application/json';
-	    }
-
-	    $wpdb->insert(
+			'api_name' => $api['api_name'],
+			'api_key' => $api['api_key'],
+			'api_secret' => $api['api_secret']
+			)
+		);
+	$wpdb->insert(
 		$table_name_social,
-		    array(
+		array(
 			'time' => current_time('mysql'),
-			    'social_source' => $source['social_source'],
-			    'social_title' => $source['social_title'],
-			    'social_url' => $source['social_url'],
-			    'social_content_type' => $source['social_content_type'],
-			    'social_geo' => $admin_geo_tag
-		    )
-	    );
-	}
-    } elseif (
-	!isset($_POST['admin_social_valid'])
-	    && $_POST[$admin_social]['social_source']
-	&& $_POST[$admin_social]['social_url']
-	&& $_POST[$admin_social]['social_title']
-    ) {
-	$pos = strpos($_POST[$admin_social]['social_url'], 'rss');
-
-	if ($pos !== false)
-	{
-	    $_POST[$admin_social]['social_content_type'] = 'application/xml+rss';
-	} else
-	{
-	    $_POST[$admin_social]['social_content_type'] = 'application/json';
-	}
-	
-	$wpdb->update(
-	    $table_name_social,
+			'social_source' => $social['social_source'],
+			'social_title' => $social['social_title'],
+			'social_url' => $social['social_url'],
+			'social_geo' => $admin_geo_tag,
+			'social_content_type' => $social['social_content_type'],
+			'social_api_key' => $api['api_key'],
+			'social_api_secret' => $api['api_secret']
+			)
+		);
+    } else if (!isset($_POST['admin_api_valid'])) {
+    	$wpdb->insert(
+		$table_name_social,
 		array(
-		    'time' => current_time('mysql'),
-			'social_source' => $_POST[$admin_social]['social_source'],
-			'social_url' => $_POST[$admin_social]['social_url'],
-			'social_title' => $_POST[$admin_social]['social_title'],
-			'social_content_type' => $_POST[$admin_social]['social_content_type'],
-		),
-		array(
-		    'id' => $_POST[$admin_social]['social_id']
-		)
-	);
-    } elseif (isset($_POST[$admin_social]['delete_item']) && $_POST[$admin_social]['delete_item'] === 'true') {
-	$wpdb->delete(
-	    $table_name_social,
-		array(
-		    'id' => $_POST[$admin_social]['delete_this_item']
-		)
-	);
+			'time' => current_time('mysql'),
+			'social_source' => $social['social_source'],
+			'social_title' => $social['social_title'],
+			'social_url' => $social['social_url'],
+			'social_geo' => $admin_geo_tag,
+			'social_content_type' => $social['social_content_type'],
+			// 'social_api_key' => $api['api_key'],
+			// 'social_api_secret' => $api['api_secret']
+			)
+		);
     }
+ //    elseif (
+	// !isset($_POST['admin_api_valid'])
+	// && $_POST[$admin_api]['api_source']
+	// && $_POST[$admin_api]['api_key']
+	// && $_POST[$admin_api]['api_secret']
+ //    ) {
+	// $wpdb->update(
+	//     $table_name_api,
+	// 	array(
+	// 	    'time' => current_time('mysql'),
+	// 		'api_source' => $_POST[$admin_api]['api_source'],
+	// 		'api_key' => $_POST[$admin_api]['api_key'],
+	// 		'api_secret' => $_POST[$admin_api]['api_secret']
+	// 	),
+	// 	array(
+	// 	    'id' => $_POST[$admin_api]['api_id']
+	// 	)
+	// );
+ //    } elseif (isset($_POST[$admin_api]['delete_item']) && $_POST[$admin_api]['delete_item'] === 'true') {
+	// $wpdb->delete(
+	//     $table_name_api,
+	// 	array(
+	// 	    'id' => $_POST[$admin_api]['delete_this_item']
+	// 	)
+	// );
+ //    }
+
+ //    if ($_POST['admin_social_valid'] === 'true') {
+	// foreach($_POST[$admin_social] as $source) {
+
+	//     $wpdb->insert(
+	// 	$table_name_social,
+	// 	    array(
+	// 		'time' => current_time('mysql'),
+	// 		    'social_source' => $source['social_source'],
+	// 		    'social_title' => $source['social_title'],
+	// 		    'social_url' => $source['social_url'],
+	// 		    'social_content_type' => $source['social_content_type'],
+	// 		    'social_geo' => $admin_geo_tag
+	// 	    )
+	//     );
+	// }
+ //    } elseif (
+	// !isset($_POST['admin_social_valid'])
+	//     && $_POST[$admin_social]['social_source']
+	// && $_POST[$admin_social]['social_url']
+	// && $_POST[$admin_social]['social_title']
+ //    ) {
+	// $pos = strpos($_POST[$admin_social]['social_url'], 'rss');
+
+	// if ($pos !== false)
+	// {
+	//     $_POST[$admin_social]['social_content_type'] = 'application/xml+rss';
+	// } else
+	// {
+	//     $_POST[$admin_social]['social_content_type'] = 'application/json';
+	// }
+
+	// $wpdb->update(
+	//     $table_name_social,
+	// 	array(
+	// 	    'time' => current_time('mysql'),
+	// 		'social_source' => $_POST[$admin_social]['social_source'],
+	// 		'social_url' => $_POST[$admin_social]['social_url'],
+	// 		'social_title' => $_POST[$admin_social]['social_title'],
+	// 		'social_content_type' => $_POST[$admin_social]['social_content_type'],
+	// 	),
+	// 	array(
+	// 	    'id' => $_POST[$admin_social]['social_id']
+	// 	)
+	// );
+ //    } elseif (isset($_POST[$admin_social]['delete_item']) && $_POST[$admin_social]['delete_item'] === 'true') {
+	// $wpdb->delete(
+	//     $table_name_social,
+	// 	array(
+	// 	    'id' => $_POST[$admin_social]['delete_this_item']
+	// 	)
+	// );
+ //    }
 
 
     header("Location: " . $_SERVER['REQUEST_URI']);
