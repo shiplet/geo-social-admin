@@ -3,9 +3,9 @@
    Plugin Name: Geo Social Admin
    Plugin URI: http://github.com/shiplet/geo-social-admin
    Description: Global social admin settings
-   Version: 0.1
-   Author: Michael Shiplet
-   Author URI: http://shiplet.github.io
+   Version: 1.0.0
+   Author: Michael Shiplet / Super Top Secret
+   Author URI: http://wearetopsecret.com
    License: The MIT License (MIT)
  */
 
