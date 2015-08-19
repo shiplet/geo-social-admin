@@ -26,8 +26,9 @@ function watchFormFields() {
     var formStrings = '#input_social_source, #input_social_title, #input_social_url, #add-api-select';
 
     for (var key in formFields) {
-        if (!formFields[key].val() || formFields[key].val() === 'init') {
+        if (!formFields[key].val() || formFields[key].val() === 'init' || formFields[key].val() === 'null') {
             formFields[key].css({border: '1px solid red'});
+            alert('Please fill in all required fields.');
         }
     };
 
@@ -44,7 +45,7 @@ function watchFormFields() {
 
 
 jQuery('#add-api-select').on('change', function(){
-    var check = jQuery('#add-api-select option:selected').val();
+    var check = jQuery('#add-api-select').val();
     if (check === 'add_an_api') {
         addApiField();
     } else if (check !== "add_an_api" && addApiActive) {
@@ -63,7 +64,7 @@ jQuery('#geo-social-admin-submit').on('click', function(e){
     var socialUrl = jQuery('#input_social_url').val();
     var socialApi = jQuery('#add-api-select').val();
 
-    if (!socialSource || !socialTitle || !socialUrl || socialApi === 'init') {
+    if (!socialSource || !socialTitle || !socialUrl || socialApi === 'init' || socialApi === 'null') {
         e.preventDefault();
         watchFormFields();
     } else {

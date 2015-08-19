@@ -48,16 +48,18 @@ function add_jq_script() {
 switch($_SERVER['REQUEST_METHOD'])
 {
     case 'POST':
-    	if ($_SERVER['SCRIPT_NAME'] === '/wp-admin/options-general.php') { 
+    	if ($_SERVER['SCRIPT_NAME'] === '/wp-admin/options-general.php') {
 
 			error_log(print_r($_POST,true));
 
 	    	$table_name_api = $geo_social_admin->get_api_table();
 	    	$table_name_social = $geo_social_admin->get_social_table();
 
+			$api = $_POST['admin_api'];
+			$social = $_POST['admin_social'];
+
 			if ($_POST['admin_api_valid'] === 'true') {
-				$api = $_POST['admin_api'];
-				$social = $_POST['admin_social'];
+
 
 				$pos = strpos($social['social_url'], 'rss');
 
@@ -90,21 +92,24 @@ switch($_SERVER['REQUEST_METHOD'])
 						)
 					);
 	    	}
-    // else if (!isset($_POST['admin_api_valid'])) {
-   //  	$wpdb->insert(
-   //  		$table_name_social,
-   //  		array(
-   //  			'time' => current_time('mysql'),
-   //  			'social_source' => $social['social_source'],
-   //  			'social_title' => $social['social_title'],
-   //  			'social_url' => $social['social_url'],
-   //  			'social_geo' => $admin_geo_tag,
-   //  			'social_content_type' => $social['social_content_type'],
-			// // 'social_api_key' => $api['api_key'],
-			// // 'social_api_secret' => $api['api_secret']
-   //  			)
-   //  		);
-   //  }
+		    else if (!isset($_POST['admin_api_valid'])) {
+
+		    	$social_api = $wpdb->get_row('SELECT api_key, api_secret FROM ' . $table_name_api . ' WHERE id = ' . $_POST['admin_social']['api'], ARRAY_A);
+
+		    	$wpdb->insert(
+		    		$table_name_social,
+		    		array(
+		    			'time' => current_time('mysql'),
+		    			'social_source' => $social['social_source'],
+		    			'social_title' => $social['social_title'],
+		    			'social_url' => $social['social_url'],
+		    			'social_geo' => $admin_geo_tag,
+		    			'social_content_type' => $social['social_content_type'],
+						'social_api_key' => $social_api['api_key'],
+						'social_api_secret' => $social_api['api_secret']
+		    			)
+		    		);
+		    }
  //    elseif (
 	// !isset($_POST['admin_api_valid'])
 	// && $_POST[$admin_api]['api_source']
@@ -189,7 +194,7 @@ switch($_SERVER['REQUEST_METHOD'])
     	header("Location: " . $_SERVER['REQUEST_URI']);
 	    exit;
 	    break;
-	} else {		
+	} else {
 		break;
 	}
 

@@ -283,25 +283,25 @@ public function  add_api_field()
     global $wpdb;
     $api = $this->get_api_fields();
     echo '<section>';
-    echo '<div class="api-item" id="geo_social_admin_entry">';
-    echo ' <label class="geo-social-admin-label" for="input_social_source">Social Source</label>';
-    echo '<input id="input_social_source" name="admin_social[social_source]" size="40" type="text" value=""/>';
-    echo ' <label class="geo-social-admin-label" for="input_social_title">Title (eg: Converse Tumblr)</label>';
-    echo '<input id="input_social_title" name="admin_social[social_title]" size="40" type="text" value=""/>';
-    echo ' <label class="geo-social-admin-label" for="input_social_url">URL</label>';
-    echo '<input id="input_social_url" name="admin_social[social_url]" size="40" type="text" value=""/>';
-    echo ' <label class="geo-social-admin-label" for="input_add_api"><span class="bold">API</span></label>';
-    echo '<select class="styled-select" name="admin_social[api]" id="add-api-select">';
-    echo '<option value="init" selected>- Select or Add an API - </option>';
-    echo '<option value="add_an_api">Add New</option>';
-    echo '<option value="null"></option>';
-    if ($api) {
-        foreach ($api as $i ) {
-            echo '<option value="' . $i['api_name'] . '">' . $i['api_name'] . '</option>';
-        };
-    }
-    echo '</select>';
-    echo '</div>';
+        echo '<div class="api-item" id="geo_social_admin_entry">';
+            echo '<label class="geo-social-admin-label" for="input_social_title">Title (eg: Converse Tumblr)</label>';
+            echo '<input id="input_social_title" name="admin_social[social_title]" size="40" type="text" value=""/>';
+            echo '<label class="geo-social-admin-label" for="input_social_url">URL</label>';
+            echo '<input id="input_social_url" name="admin_social[social_url]" size="40" type="text" value=""/>';
+            echo '<label class="geo-social-admin-label" for="input_social_source">Social Source</label>';
+            echo '<input id="input_social_source" name="admin_social[social_source]" size="40" type="text" value=""/>';
+            echo '<label class="geo-social-admin-label" for="input_add_api"><span class="bold">API</span></label>';
+            echo '<select class="styled-select" name="admin_social[api]" id="add-api-select">';
+                echo '<option value="init" selected>- Select or Add an API - </option>';
+                echo '<option value="add_an_api">Add New</option>';
+                echo '<option value="null"></option>';
+                if ($api) {
+                    foreach ($api as $i ) {
+                        echo '<option value="' . $i['id'] . '">' . $i['api_name'] . '</option>';
+                    };
+                }
+                echo '</select>';
+        echo '</div>';
     echo '</section>';
 }
 
@@ -329,9 +329,9 @@ public function api_list()
     echo '<h3 class="geo-admin-section-header">Social Feeds</h3>';
     foreach($social_feed as $i) {
         echo '<div class="geo-admin-section-body">';
-        echo '<p><span>Source:</span> ' . $i['social_source'] . '</p>';
-        echo '<p><span>URL:</span> ' . $i['social_url'] . '</p>';
         echo '<p><span>Name:</span> ' . $i['social_title'] . '</p>';
+        echo '<p><span>URL:</span> ' . $i['social_url'] . '</p>';
+        echo '<p><span>Source:</span> ' . $i['social_source'] . '</p>';
         echo '<input type="hidden" data-model="social" data-index="' . $i['id'] . '"/>';
         echo '<a href="#" class="apiEdit">Edit</a> | <a href="#" class="apiDelete">Delete</a>';
         echo '</div>';
