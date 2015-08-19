@@ -1,34 +1,5 @@
-// use jQuery instead of $
-
 var addApiActive = false;
 
-jQuery('#add-api-select').on('change', function(){
-    var check = jQuery('#add-api-select option:selected').val();
-    if (check === 'add_an_api') {
-        addApiField();
-    } else if (check !== "add_an_api" && addApiActive) {
-        jQuery('#api_entry').remove();
-        addApiActive = false;
-    } else if (check === 'null') {
-        jQuery('#add-api-select').find('option').removeAttr('selected');
-        jQuery('#add-api-select option').find('option[value="init"]').attr('selected',true);
-    }
-});
-
-jQuery('#geo-social-admin-submit').on('click', function(e){
-    var socialSource = jQuery('#input_social_source').val();
-    var socialTitle = jQuery('#input_social_title').val();
-    var socialUrl = jQuery('#input_social_url').val();
-    var socialApi = jQuery('#add-api-select').val();
-
-    if (!socialSource || !socialTitle || !socialUrl || socialApi === 'init') {
-        e.preventDefault();
-        watchFormFields();
-        alert('Please enter the required fields.');
-    } else {
-        return true;
-    }
-})
 
 function addApiField() {
     if (!addApiActive) {
@@ -36,6 +7,13 @@ function addApiField() {
         addApiActive = true;
     }
 };
+
+
+function removeOverlay(input) {
+    jQuery('.apiEditBox').remove();
+    jQuery('#geo-social-overlay').remove();
+}
+
 
 function watchFormFields() {
     var formFields = {
@@ -64,52 +42,35 @@ function watchFormFields() {
     })
 }
 
-// function removeApiField(input) {
-//     if (apiFieldCounter === 1) {
-// 	apisAreActive = false;
-// 	jQuery('#admin_api_valid').remove();
-//     }
-//     apiFieldCounter = 0;
-//     jQuery(input).bind('dragstart', function(e){
-// 	e.preventDefault();
-//     }).parent().remove();
-//     jQuery('.api-item-close').each(function(i){
-// 	jQuery(this).attr('data-index', apiFieldCounter++);
-//     });
-// }
 
-// function addSocialField() {
-//     if (!socialsAreActive) {
-// 	socialsAreActive = true;
-// 	jQuery('.social-box').append('<input id="admin_social_valid" type="hidden" name="admin_social_valid" value="true"/>');
-//     }
-// 	jQuery('.social-box').append('<div class="api-item"><label for="input_social_source'+socialFieldCounter+'">Social Source</label><input id="input_social_source'+socialFieldCounter+'" name="admin_social['+socialFieldCounter+'][social_source]" size="40" type="text" value=""/><label for="input_social_url'+socialFieldCounter+'">URL</label><input id="input_social_url'+socialFieldCounter+'" name="admin_social['+socialFieldCounter+'][social_url]" size="40" type="text" value=""/><label for="input_social_title'+socialFieldCounter+'">Name</label><input id="input_social_title'+socialFieldCounter+'" name="admin_social['+socialFieldCounter+'][social_title]" size="40" type="text" value=""/><div class="api-item-close" onclick="removeSocialField(this)" data-index="'+socialFieldCounter+'">&times;</div></div>');
-//     ++socialFieldCounter;
-// }
+jQuery('#add-api-select').on('change', function(){
+    var check = jQuery('#add-api-select option:selected').val();
+    if (check === 'add_an_api') {
+        addApiField();
+    } else if (check !== "add_an_api" && addApiActive) {
+        jQuery('#api_entry').remove();
+        addApiActive = false;
+    } else if (check === 'null') {
+        jQuery('#add-api-select').find('option').removeAttr('selected');
+        jQuery('#add-api-select option').find('option[value="init"]').attr('selected',true);
+    }
+});
 
-// function removeSocialField(input) {
-//     if (socialFieldCounter === 1) {
-// 	socialsAreActive = false;
-// 	jQuery('#admin_social_valid').remove();
-//     }
-//     socialFieldCounter = 0;
-//     jQuery(input).bind('dragstart', function(e){
-// 	e.preventDefault();
-//     }).parent().remove();
-//     jQuery('.api-item-close').each(function(i){
-// 	jQuery(this).attr('data-index', socialFieldCounter++);
-//     });
-// }
 
-/*
-<input
- id=""
- name=""
- size=""
- type=""
- value=""
-/>
-*/
+jQuery('#geo-social-admin-submit').on('click', function(e){
+    var socialSource = jQuery('#input_social_source').val();
+    var socialTitle = jQuery('#input_social_title').val();
+    var socialUrl = jQuery('#input_social_url').val();
+    var socialApi = jQuery('#add-api-select').val();
+
+    if (!socialSource || !socialTitle || !socialUrl || socialApi === 'init') {
+        e.preventDefault();
+        watchFormFields();
+    } else {
+        return true;
+    }
+})
+
 
 jQuery('.apiEdit').on('click', function(e){
     e.preventDefault();
@@ -127,20 +88,63 @@ jQuery('.apiEdit').on('click', function(e){
    }
 });
 
+
 jQuery('.apiDelete').on('click', function(e){
     e.preventDefault();
     var id = jQuery(this).parent().children('input').attr('data-index');
     var model = jQuery(this).parent().children('input').attr('data-model');
     if (model === 'api') {
-    	jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_api[delete_item]" value="true"/><input type="hidden" name="admin_api[delete_this_item]" value="'+id+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
+        jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_api[delete_item]" value="true"/><input type="hidden" name="admin_api[delete_this_item]" value="'+id+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
     }
     if (model === 'social') {
-    	jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_social[delete_item]" value="true"/><input type="hidden" name="admin_social[delete_this_item]" value="'+id+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
+        jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_social[delete_item]" value="true"/><input type="hidden" name="admin_social[delete_this_item]" value="'+id+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
     }
 });
 
 
-function removeOverlay(input) {
-    jQuery('.apiEditBox').remove();
-    jQuery('#geo-social-overlay').remove();
-}
+// function removeApiField(input) {
+//     if (apiFieldCounter === 1) {
+//  apisAreActive = false;
+//  jQuery('#admin_api_valid').remove();
+//     }
+//     apiFieldCounter = 0;
+//     jQuery(input).bind('dragstart', function(e){
+//  e.preventDefault();
+//     }).parent().remove();
+//     jQuery('.api-item-close').each(function(i){
+//  jQuery(this).attr('data-index', apiFieldCounter++);
+//     });
+// }
+
+// function addSocialField() {
+//     if (!socialsAreActive) {
+//  socialsAreActive = true;
+//  jQuery('.social-box').append('<input id="admin_social_valid" type="hidden" name="admin_social_valid" value="true"/>');
+//     }
+//  jQuery('.social-box').append('<div class="api-item"><label for="input_social_source'+socialFieldCounter+'">Social Source</label><input id="input_social_source'+socialFieldCounter+'" name="admin_social['+socialFieldCounter+'][social_source]" size="40" type="text" value=""/><label for="input_social_url'+socialFieldCounter+'">URL</label><input id="input_social_url'+socialFieldCounter+'" name="admin_social['+socialFieldCounter+'][social_url]" size="40" type="text" value=""/><label for="input_social_title'+socialFieldCounter+'">Name</label><input id="input_social_title'+socialFieldCounter+'" name="admin_social['+socialFieldCounter+'][social_title]" size="40" type="text" value=""/><div class="api-item-close" onclick="removeSocialField(this)" data-index="'+socialFieldCounter+'">&times;</div></div>');
+//     ++socialFieldCounter;
+// }
+
+// function removeSocialField(input) {
+//     if (socialFieldCounter === 1) {
+//  socialsAreActive = false;
+//  jQuery('#admin_social_valid').remove();
+//     }
+//     socialFieldCounter = 0;
+//     jQuery(input).bind('dragstart', function(e){
+//  e.preventDefault();
+//     }).parent().remove();
+//     jQuery('.api-item-close').each(function(i){
+//  jQuery(this).attr('data-index', socialFieldCounter++);
+//     });
+// }
+
+/*
+<input
+ id=""
+ name=""
+ size=""
+ type=""
+ value=""
+/>
+*/

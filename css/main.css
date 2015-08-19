@@ -159,6 +159,7 @@
 
 .api-item input, .apiEditBox input {
   margin-bottom: 10px;
+  width: 253px;
 }
 
 .api-item-close {
@@ -318,7 +319,9 @@
   margin-top: 10px;
 }
 
-
+#wpfooter {
+  display: none;
+}
 
 
 

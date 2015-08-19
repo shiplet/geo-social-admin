@@ -14,6 +14,9 @@
    All Rights Reserved
  */
 
+ini_set("log_errors", 1);
+ini_set("error_log", "/var/log/php_error");
+
 // Include the class
 include_once dirname(__FILE__) . '/GeoSocialAdmin.class.php';
 
@@ -34,7 +37,6 @@ add_action('admin_head', array($geo_social_admin, 'adminHead'));
 
 // trigger plugin to create table on activation
 register_activation_hook( __FILE__, array($geo_social_admin, 'tableCreate'));
-register_activation_hook( __FILE__, array($geo_social_admin, 'dbInsert'));
 
 // register scripts
 function add_jq_script() {
@@ -46,58 +48,63 @@ function add_jq_script() {
 switch($_SERVER['REQUEST_METHOD'])
 {
     case 'POST':
-    $table_name_api = $geo_social_admin->get_api_table();
-    $table_name_social = $geo_social_admin->get_social_table();
+    	if ($_SERVER['SCRIPT_NAME'] === '/wp-admin/options-general.php') { 
 
-    if ($_POST['admin_api_valid'] === 'true') {
-	$api = $_POST['admin_api'];
-	$social = $_POST['admin_social'];
+			error_log(print_r($_POST,true));
 
-	$pos = strpos($social['social_url'], 'rss');
+	    	$table_name_api = $geo_social_admin->get_api_table();
+	    	$table_name_social = $geo_social_admin->get_social_table();
 
-	if ($pos !== false) {
-		$social['social_content_type'] = 'application/xml+rss';
-	} else {
-		$social['social_content_type'] = 'application/json';
-	}
+			if ($_POST['admin_api_valid'] === 'true') {
+				$api = $_POST['admin_api'];
+				$social = $_POST['admin_social'];
 
-	$wpdb->insert(
-		$table_name_api,
-		array(
-			'time' => current_time('mysql'),
-			'api_name' => $api['api_name'],
-			'api_key' => $api['api_key'],
-			'api_secret' => $api['api_secret']
-			)
-		);
-	$wpdb->insert(
-		$table_name_social,
-		array(
-			'time' => current_time('mysql'),
-			'social_source' => $social['social_source'],
-			'social_title' => $social['social_title'],
-			'social_url' => $social['social_url'],
-			'social_geo' => $admin_geo_tag,
-			'social_content_type' => $social['social_content_type'],
-			'social_api_key' => $api['api_key'],
-			'social_api_secret' => $api['api_secret']
-			)
-		);
-    } else if (!isset($_POST['admin_api_valid'])) {
-    	$wpdb->insert(
-		$table_name_social,
-		array(
-			'time' => current_time('mysql'),
-			'social_source' => $social['social_source'],
-			'social_title' => $social['social_title'],
-			'social_url' => $social['social_url'],
-			'social_geo' => $admin_geo_tag,
-			'social_content_type' => $social['social_content_type'],
-			// 'social_api_key' => $api['api_key'],
-			// 'social_api_secret' => $api['api_secret']
-			)
-		);
-    }
+				$pos = strpos($social['social_url'], 'rss');
+
+				if ($pos !== false) {
+					$social['social_content_type'] = 'application/xml+rss';
+				} else {
+					$social['social_content_type'] = 'application/json';
+				}
+
+				$wpdb->insert(
+					$table_name_api,
+					array(
+						'time' => current_time('mysql'),
+						'api_name' => $api['api_name'],
+						'api_key' => $api['api_key'],
+						'api_secret' => $api['api_secret']
+						)
+					);
+				$wpdb->insert(
+					$table_name_social,
+					array(
+						'time' => current_time('mysql'),
+						'social_source' => $social['social_source'],
+						'social_title' => $social['social_title'],
+						'social_url' => $social['social_url'],
+						'social_geo' => $admin_geo_tag,
+						'social_content_type' => $social['social_content_type'],
+						'social_api_key' => $api['api_key'],
+						'social_api_secret' => $api['api_secret']
+						)
+					);
+	    	}
+    // else if (!isset($_POST['admin_api_valid'])) {
+   //  	$wpdb->insert(
+   //  		$table_name_social,
+   //  		array(
+   //  			'time' => current_time('mysql'),
+   //  			'social_source' => $social['social_source'],
+   //  			'social_title' => $social['social_title'],
+   //  			'social_url' => $social['social_url'],
+   //  			'social_geo' => $admin_geo_tag,
+   //  			'social_content_type' => $social['social_content_type'],
+			// // 'social_api_key' => $api['api_key'],
+			// // 'social_api_secret' => $api['api_secret']
+   //  			)
+   //  		);
+   //  }
  //    elseif (
 	// !isset($_POST['admin_api_valid'])
 	// && $_POST[$admin_api]['api_source']
@@ -179,9 +186,12 @@ switch($_SERVER['REQUEST_METHOD'])
  //    }
 
 
-    header("Location: " . $_SERVER['REQUEST_URI']);
-    exit;
-    break;
+    	header("Location: " . $_SERVER['REQUEST_URI']);
+	    exit;
+	    break;
+	} else {		
+		break;
+	}
 
     case 'GET':
     break;
