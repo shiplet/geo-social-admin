@@ -21,14 +21,14 @@ class Geo_Social_Admin {
     {
     	global $wpdb;
     	$table_name_api = $this->get_api_table();
-    	return $wpdb->get_results("SELECT * FROM $table_name_api WHERE ID > 1", ARRAY_A);
+    	return $wpdb->get_results("SELECT * FROM $table_name_api WHERE ID > 1 ORDER BY api_name", ARRAY_A);
     }
 
     private function get_social_fields()
     {
     	global $wpdb;
     	$table_name_social = $this->get_social_table();
-    	return $wpdb->get_results("SELECT * FROM $table_name_social WHERE ID > 1", ARRAY_A);
+    	return $wpdb->get_results("SELECT * FROM $table_name_social WHERE ID > 1 ORDER BY social_title", ARRAY_A);
     }
 
     /*
@@ -292,7 +292,7 @@ public function  add_api_field()
             echo '<input id="input_social_url" name="admin_social[social_url]" size="40" type="text" value=""/>';
             echo '<label class="geo-social-admin-label" for="input_social_source">Social Source</label>';
             echo '<input id="input_social_source" name="admin_social[social_source]" size="40" type="text" value=""/>';
-            echo '<label class="geo-social-admin-label" for="input_add_api"><span class="bold">API</span></label>';
+            echo '<label class="geo-social-admin-label" for="input_add_api"><span class="bold">Associated API</span></label>';
             echo '<select class="styled-select" name="admin_social[api]" id="add-api-select">';
                 echo '<option value="init" selected>- Select or Add an API - </option>';
                 echo '<option value="add_an_api">Add New</option>';

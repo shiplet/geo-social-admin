@@ -110,11 +110,16 @@ jQuery('.apiEdit').on('click', function(e){
    }
    if (model === 'social') {
        var assocApi = jQuery(this).parent().children('p:nth-child(4)').text().split(':')[1].toString().trim();
-       var name = jQuery(this).parent().children('p:nth-child(3)').text().split(':')[1].toString().trim();
-       var socialSource = jQuery(this).parent().children('p:nth-child(1)').text().split(':')[1].toString().trim();
+       var name = jQuery(this).parent().children('p:nth-child(1)').text().split(':')[1].toString().trim();
+       var socialSource = jQuery(this).parent().children('p:nth-child(3)').text().split(':')[1].toString().trim();
        var url = jQuery(this).parent().children('p:nth-child(2)').text().split(' ')[1].toString().trim();
-       console.log(jQuery('#api-list').children().children('.api-names').text());
-       jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox"><form method="post"><input type="hidden" name="admin_social[social_id]" value="'+id+'"/><input type="hidden" name="admin_social[edit_social]" value="true"/><label for="input_social_title_update">Name</label><input id="input_social_title_update" name="admin_social[social_title]" size="40" type="text" value="'+name+'"/><label for="input_social_url_update">URL</label><input id="input_social_url_update" name="admin_social[social_url]" size="40" type="text" value="'+url+'"/><label for="input_social_source_update">Source</label><input id="input_api_update" name="admin_social[social_source]" size="40" type="text" value="'+socialSource+'"/><label for="input_assoc_api_update">Associated API</label><select class="styled-select"></select><input type="submit" class="save" action=""  value="Save Changes"/></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
+       var apiNames = jQuery.makeArray(jQuery('#api-list').children().children('.api-names'));
+       var apiNamesDropdown = '';
+       apiNames.forEach(function(i){
+        var apiName = i.innerText.split(':')[1].toString().trim();
+        apiNamesDropdown += '<option value="'+apiName+'">'+apiName+'</option>';
+       });
+       jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox"><form method="post"><input type="hidden" name="admin_social[social_id]" value="'+id+'"/><input type="hidden" name="admin_social[edit_social]" value="true"/><label for="input_social_title_update">Name</label><input id="input_social_title_update" name="admin_social[social_title]" size="40" type="text" value="'+name+'"/><label for="input_social_url_update">URL</label><input id="input_social_url_update" name="admin_social[social_url]" size="40" type="text" value="'+url+'"/><label for="input_social_source_update">Source</label><input id="input_api_update" name="admin_social[social_source]" size="40" type="text" value="'+socialSource+'"/><label for="input_assoc_api_update">Associated API</label><select class="styled-select" name="admin_social[api_name]"><option value="" selected></option>'+apiNamesDropdown+'</select><input type="submit" class="save" action=""  value="Save Changes"/></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
    }
 });
 
@@ -122,10 +127,10 @@ jQuery('.apiEdit').on('click', function(e){
 jQuery('.apiDelete').on('click', function(e){
     e.preventDefault();
     listenForEsc();
-    var id = jQuery(this).parent().children('input').attr('data-index');
     var model = jQuery(this).parent().children('input').attr('data-model');
     if (model === 'api') {
-        jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_api[delete_item]" value="true"/><input type="hidden" name="admin_api[delete_this_item]" value="'+id+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
+        var apiName = jQuery(this).parent().children('p:nth-child(1)').text().split(':')[1].toString().trim();
+        jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_api[delete_item]" value="true"/><input type="hidden" name="admin_api[delete_this_item]" value="'+apiName+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
     }
     if (model === 'social') {
         jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_social[delete_item]" value="true"/><input type="hidden" name="admin_social[delete_this_item]" value="'+id+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');

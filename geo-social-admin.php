@@ -16,6 +16,7 @@
 
 ini_set("log_errors", 1);
 ini_set("error_log", "/var/log/php_error");
+ini_set("date.timezone", "America/Denver");
 
 // Include the class
 include_once dirname(__FILE__) . '/GeoSocialAdmin.class.php';
@@ -64,9 +65,14 @@ switch($_SERVER['REQUEST_METHOD'])
 				$social['social_content_type'] = 'application/json';
 			}
 
+			///////////////////////////////
+			// BEGIN POST INTENT CHECKS //
+			/////////////////////////////
+
+			// INTENT: Add either a new social stream AND a new API - OR - just a new API //
 
 			if ($_POST['admin_api_valid'] === 'true') {
-
+				error_log('Submitting from all new');
 				$wpdb->insert(
 					$table_name_api,
 					array(
@@ -76,23 +82,29 @@ switch($_SERVER['REQUEST_METHOD'])
 						'api_secret' => $api['api_secret']
 						)
 					);
-				$wpdb->insert(
-					$table_name_social,
-					array(
-						'time' => current_time('mysql'),
-						'social_source' => $social['social_source'] ? $social['social_source'] : null,
-						'social_title' => $social['social_title'] ? $social['social_title'] : null,
-						'social_url' => $social['social_url'] ? $social['social_url'] : null,
-						'social_geo' => $admin_geo_tag ? $admin_geo_tag : null,
-						'social_content_type' => $social['social_content_type'] ? $social['social_content_type'] : null,
-						'social_api_key' => $api['api_key'] ? $api['api_key'] : null,
-						'social_api_secret' => $api['api_secret'] ? $api['api_secret'] : null,
-						'social_api_name' => $api['api_name'] ? $api['api_name'] : null
-						)
-					);
+				if ($social['social_title']) {
+					$wpdb->insert(
+						$table_name_social,
+						array(
+							'time' => current_time('mysql'),
+							'social_source' => $social['social_source'] ? $social['social_source'] : null,
+							'social_title' => $social['social_title'] ? $social['social_title'] : null,
+							'social_url' => $social['social_url'] ? $social['social_url'] : null,
+							'social_geo' => $admin_geo_tag ? $admin_geo_tag : null,
+							'social_content_type' => $social['social_url'] ? $social['social_content_type'] : null,
+							'social_api_key' => $api['api_key'] ? $api['api_key'] : null,
+							'social_api_secret' => $api['api_secret'] ? $api['api_secret'] : null,
+							'social_api_name' => $api['api_name'] ? $api['api_name'] : null
+							)
+						);
+				}
 	    	}
-		    else if (!isset($_POST['admin_api_valid']) && !isset($api['edit_api']) && !isset($social['edit_social'])) {
 
+
+	    	// Intent: Add just a new social stream with pre-existing API //
+
+		    else if (!isset($_POST['admin_api_valid']) && !isset($api['edit_api']) && !isset($social['edit_social']) && !isset($api['delete_item'])) {
+		    	error_log('Submitting from simple social stream.');
 		    	$social_api = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $social['api'], ARRAY_A);
 
 		    	$wpdb->insert(
@@ -110,9 +122,13 @@ switch($_SERVER['REQUEST_METHOD'])
 		    			)
 		    		);
 		    }
-		    elseif (isset($api['edit_api'])) {
-		    	error_log(print_r($api,true));
-		    	$default = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $api['api_id'], ARRAY_A);
+
+
+		    // Intent: edit a pre-existing API //
+
+		    elseif (isset($api['edit_api']) && $api['edit_api'] === 'true') {
+		    	error_log('Submitting from edit_api');
+		    	$default_api = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $api['api_id'], ARRAY_A);
 		    	error_log(print_r($default,true));
 				$wpdb->update(
 				    $table_name_api,
@@ -139,75 +155,67 @@ switch($_SERVER['REQUEST_METHOD'])
 						)
 					);
 		    }
-		    elseif (isset($social['edit_social'])) {
+
+
+		    // Intent: Edit a pre-existing social stream and associated API //
+
+		    elseif (isset($social['edit_social']) && $social['edit_social'] === 'true') {
+		    	error_log('Submitting from edit_social');
 		    	error_log(print_r($social,true));
+		    	$default_social = $wpdb->get_row('SELECT * FROM ' . $table_name_social . ' WHERE id = ' . $social['social_id'], ARRAY_A);
+		    	if ($social['api_name']) {
+		    		$newApi = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE api_name = "' . $social['api_name'] . '"', ARRAY_A);
+		    	}
+		    	$wpdb->update(
+		    		$table_name_social,
+		    		array(
+		    			'time' => current_time('mysql'),
+		    			'social_source' => $social['social_source'] ? $social['social_source'] : $default_social['social_source'],
+		    			'social_url' => $social['social_url'] ? $social['social_url'] : $default_social['social_url'],
+		    			'social_content_type' => $social['social_url'] ? $social['social_content_type'] : $default_social['social_content_type'],
+		    			'social_title' => $social['social_title'] ? $social['social_title'] : $default_social['social_title'],
+		    			'social_geo' => $admin_geo_tag ? $admin_geo_tag : $default_social['social_geo'],
+		    			'social_api_key' => $social['api_name'] ? $newApi['api_key'] : $default_social['social_api_key'],
+		    			'social_api_secret' => $social['api_name'] ? $newApi['api_secret'] : $default_social['social_api_secret'],
+		    			'social_api_name' => $social['api_name'] ? $social['api_name'] : $default_social['social_api_name']
+		    			),
+		    			array(
+		    				'id' => $social['social_id']
+		    				)
+		    		);
 		    }
-    // elseif (isset($_POST[$admin_api]['delete_item']) && $_POST[$admin_api]['delete_item'] === 'true') {
-	// $wpdb->delete(
-	//     $table_name_api,
-	// 	array(
-	// 	    'id' => $_POST[$admin_api]['delete_this_item']
-	// 	)
-	// );
- //    }
-
- //    if ($_POST['admin_social_valid'] === 'true') {
-	// foreach($_POST[$admin_social] as $source) {
-
-	//     $wpdb->insert(
-	// 	$table_name_social,
-	// 	    array(
-	// 		'time' => current_time('mysql'),
-	// 		    'social_source' => $source['social_source'],
-	// 		    'social_title' => $source['social_title'],
-	// 		    'social_url' => $source['social_url'],
-	// 		    'social_content_type' => $source['social_content_type'],
-	// 		    'social_geo' => $admin_geo_tag
-	// 	    )
-	//     );
-	// }
- //    } elseif (
-	// !isset($_POST['admin_social_valid'])
-	//     && $_POST[$admin_social]['social_source']
-	// && $_POST[$admin_social]['social_url']
-	// && $_POST[$admin_social]['social_title']
- //    ) {
-	// $pos = strpos($_POST[$admin_social]['social_url'], 'rss');
-
-	// if ($pos !== false)
-	// {
-	//     $_POST[$admin_social]['social_content_type'] = 'application/xml+rss';
-	// } else
-	// {
-	//     $_POST[$admin_social]['social_content_type'] = 'application/json';
-	// }
-
-	// $wpdb->update(
-	//     $table_name_social,
-	// 	array(
-	// 	    'time' => current_time('mysql'),
-	// 		'social_source' => $_POST[$admin_social]['social_source'],
-	// 		'social_url' => $_POST[$admin_social]['social_url'],
-	// 		'social_title' => $_POST[$admin_social]['social_title'],
-	// 		'social_content_type' => $_POST[$admin_social]['social_content_type'],
-	// 	),
-	// 	array(
-	// 	    'id' => $_POST[$admin_social]['social_id']
-	// 	)
-	// );
- //    } elseif (isset($_POST[$admin_social]['delete_item']) && $_POST[$admin_social]['delete_item'] === 'true') {
-	// $wpdb->delete(
-	//     $table_name_social,
-	// 	array(
-	// 	    'id' => $_POST[$admin_social]['delete_this_item']
-	// 	)
-	// );
- //    }
 
 
-    	header("Location: " . $_SERVER['REQUEST_URI']);
-	    exit;
-	    break;
+		    // Intent: Delete an api item //
+
+		    elseif (isset($api['delete_item']) && $api['delete_item'] === 'true') {
+				$wpdb->delete(
+				    $table_name_api,
+					array(
+					    'api_name' => $api['delete_this_item']
+
+						)
+					);
+				$wpdb->update(
+					$table_name_social,
+					array(
+						'social_api_name' => null,
+						'social_api_key' => null,
+						'social_api_secret' => null,
+						),
+					array(
+						'social_api_name' => $api['delete_this_item']
+						)
+					);
+		    }
+
+
+		    // Redirect the page //
+
+    		header("Location: " . $_SERVER['REQUEST_URI']);
+ 		    exit;
+		    break;
+
 	} else {
 		break;
 	}

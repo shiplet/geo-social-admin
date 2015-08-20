@@ -3,7 +3,7 @@
 }
 
 .bump-top {
-  margin-top: 30px; 
+  margin-top: 30px;
 }
 
 .api-box, .social-box {
@@ -16,7 +16,7 @@
 .add-api-button {
   display: inline-block;
   padding: 6px 12px;
-  /* border: 1px solid black; 
+  /* border: 1px solid black;
      box-sizing: border-box;
      text-align: center;
      padding-top: 7px;
@@ -214,15 +214,16 @@
 .geo-admin-section-body {
   box-sizing: border-box;
   padding: 0 10px;
-  word-wrap: break-word;  
+  word-wrap: break-word;
 }
 
 .geo-admin-section-body:not(:last-child) {
   border-bottom: 1px solid #bbb;
 }
 
-.geo-admin-section-body p span {
+.geo-admin-section-body p span, .apiEditBox form label {
   font-weight: bold;
+  color: #0073aa;
 }
 
 .geo-admin-section-body a {
