@@ -3,7 +3,7 @@
    Plugin Name: Geo Social Admin
    Plugin URI: http://github.com/shiplet/geo-social-admin
    Description: Global social admin settings
-   Version: 1.0.0
+   Version: 1.1.0
    Author: Michael Shiplet / Super Top Secret
    Author URI: http://wearetopsecret.com
    License: The MIT License (MIT)
@@ -103,7 +103,7 @@ switch($_SERVER['REQUEST_METHOD'])
 
 	    	// Intent: Add just a new social stream with pre-existing API //
 
-		    else if (!isset($_POST['admin_api_valid']) && !isset($api['edit_api']) && !isset($social['edit_social']) && !isset($api['delete_item'])) {
+		    else if (!isset($_POST['admin_api_valid']) && !isset($api['edit_api']) && !isset($social['edit_social']) && !isset($api['delete_item']) && !isset($social['delete_item'])) {
 		    	error_log('Submitting from simple social stream.');
 		    	$social_api = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $social['api'], ARRAY_A);
 
@@ -189,24 +189,33 @@ switch($_SERVER['REQUEST_METHOD'])
 		    // Intent: Delete an api item //
 
 		    elseif (isset($api['delete_item']) && $api['delete_item'] === 'true') {
-				$wpdb->delete(
-				    $table_name_api,
-					array(
-					    'api_name' => $api['delete_this_item']
+			$wpdb->delete(
+			    $table_name_api,
+				array(
+				    'api_name' => $api['delete_this_item']
 
-						)
-					);
-				$wpdb->update(
-					$table_name_social,
-					array(
-						'social_api_name' => null,
-						'social_api_key' => null,
-						'social_api_secret' => null,
-						),
-					array(
-						'social_api_name' => $api['delete_this_item']
-						)
-					);
+					)
+				);
+			$wpdb->update(
+				$table_name_social,
+				array(
+					'social_api_name' => null,
+					'social_api_key' => null,
+					'social_api_secret' => null,
+					),
+				array(
+					'social_api_name' => $api['delete_this_item']
+					)
+				);
+		    }
+
+		    elseif(isset($social['delete_item']) && $social['delete_item'] === 'true') {
+		    	$wpdb->delete(
+		    		$table_name_social,
+		    		array(
+		    			'id' => $social['delete_this_item']
+		    			)
+		    		);
 		    }
 
 

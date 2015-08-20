@@ -128,6 +128,8 @@ jQuery('.apiDelete').on('click', function(e){
     e.preventDefault();
     listenForEsc();
     var model = jQuery(this).parent().children('input').attr('data-model');
+    var id = jQuery(this).parent().children('input').attr('data-index');
+    console.log(id);
     if (model === 'api') {
         var apiName = jQuery(this).parent().children('p:nth-child(1)').text().split(':')[1].toString().trim();
         jQuery('body').append('<div id="geo-social-overlay" onclick="removeOverlay()"></div><div class="apiEditBox delete"><h3>Are you sure?</h3><p>This can\'t be undone.</p><form name="deleteRow" method="post"><input type="hidden" name="admin_api[delete_item]" value="true"/><input type="hidden" name="admin_api[delete_this_item]" value="'+apiName+'"><input type="submit" action="" value="Yes, I want to Delete"/><div class="cancelButton" onclick="removeOverlay()">Cancel</div></form><div class="api-item-close update" onclick="removeOverlay()">&times;</div></div>');
