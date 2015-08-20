@@ -37,6 +37,7 @@ add_action('admin_head', array($geo_social_admin, 'adminHead'));
 
 // trigger plugin to create table on activation
 register_activation_hook( __FILE__, array($geo_social_admin, 'tableCreate'));
+register_activation_hook(__FILE__, array($geo_social_admin, 'dbInsert'));
 
 // register scripts
 function add_jq_script() {
@@ -50,24 +51,21 @@ switch($_SERVER['REQUEST_METHOD'])
     case 'POST':
     	if ($_SERVER['SCRIPT_NAME'] === '/wp-admin/options-general.php') {
 
-			error_log(print_r($_POST,true));
-
 	    	$table_name_api = $geo_social_admin->get_api_table();
 	    	$table_name_social = $geo_social_admin->get_social_table();
 
 			$api = $_POST['admin_api'];
 			$social = $_POST['admin_social'];
 
+			$rss_pos = strpos($social['social_url'], 'rss');
+			if ($rss_pos !== false) {
+				$social['social_content_type'] = 'application/xml+rss';
+			} else {
+				$social['social_content_type'] = 'application/json';
+			}
+
+
 			if ($_POST['admin_api_valid'] === 'true') {
-
-
-				$pos = strpos($social['social_url'], 'rss');
-
-				if ($pos !== false) {
-					$social['social_content_type'] = 'application/xml+rss';
-				} else {
-					$social['social_content_type'] = 'application/json';
-				}
 
 				$wpdb->insert(
 					$table_name_api,
@@ -82,19 +80,20 @@ switch($_SERVER['REQUEST_METHOD'])
 					$table_name_social,
 					array(
 						'time' => current_time('mysql'),
-						'social_source' => $social['social_source'],
-						'social_title' => $social['social_title'],
-						'social_url' => $social['social_url'],
-						'social_geo' => $admin_geo_tag,
-						'social_content_type' => $social['social_content_type'],
-						'social_api_key' => $api['api_key'],
-						'social_api_secret' => $api['api_secret']
+						'social_source' => $social['social_source'] ? $social['social_source'] : null,
+						'social_title' => $social['social_title'] ? $social['social_title'] : null,
+						'social_url' => $social['social_url'] ? $social['social_url'] : null,
+						'social_geo' => $admin_geo_tag ? $admin_geo_tag : null,
+						'social_content_type' => $social['social_content_type'] ? $social['social_content_type'] : null,
+						'social_api_key' => $api['api_key'] ? $api['api_key'] : null,
+						'social_api_secret' => $api['api_secret'] ? $api['api_secret'] : null,
+						'social_api_name' => $api['api_name'] ? $api['api_name'] : null
 						)
 					);
 	    	}
-		    else if (!isset($_POST['admin_api_valid'])) {
+		    else if (!isset($_POST['admin_api_valid']) && !isset($api['edit_api']) && !isset($social['edit_social'])) {
 
-		    	$social_api = $wpdb->get_row('SELECT api_key, api_secret FROM ' . $table_name_api . ' WHERE id = ' . $_POST['admin_social']['api'], ARRAY_A);
+		    	$social_api = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $social['api'], ARRAY_A);
 
 		    	$wpdb->insert(
 		    		$table_name_social,
@@ -106,29 +105,44 @@ switch($_SERVER['REQUEST_METHOD'])
 		    			'social_geo' => $admin_geo_tag,
 		    			'social_content_type' => $social['social_content_type'],
 						'social_api_key' => $social_api['api_key'],
-						'social_api_secret' => $social_api['api_secret']
+						'social_api_secret' => $social_api['api_secret'],
+						'social_api_name' => $social_api['api_name']
 		    			)
 		    		);
 		    }
- //    elseif (
-	// !isset($_POST['admin_api_valid'])
-	// && $_POST[$admin_api]['api_source']
-	// && $_POST[$admin_api]['api_key']
-	// && $_POST[$admin_api]['api_secret']
- //    ) {
-	// $wpdb->update(
-	//     $table_name_api,
-	// 	array(
-	// 	    'time' => current_time('mysql'),
-	// 		'api_source' => $_POST[$admin_api]['api_source'],
-	// 		'api_key' => $_POST[$admin_api]['api_key'],
-	// 		'api_secret' => $_POST[$admin_api]['api_secret']
-	// 	),
-	// 	array(
-	// 	    'id' => $_POST[$admin_api]['api_id']
-	// 	)
-	// );
- //    } elseif (isset($_POST[$admin_api]['delete_item']) && $_POST[$admin_api]['delete_item'] === 'true') {
+		    elseif (isset($api['edit_api'])) {
+		    	error_log(print_r($api,true));
+		    	$default = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $api['api_id'], ARRAY_A);
+		    	error_log(print_r($default,true));
+				$wpdb->update(
+				    $table_name_api,
+					array(
+					    'time' => current_time('mysql'),
+						'api_name' => $api['api_name'] ? $api['api_name'] : $default['api_name'],
+						'api_key' => $api['api_key'] ? $api['api_key'] : $default['api_key'],
+						'api_secret' => $api['api_secret'] ? $api['api_secret'] : $default['api_secret']
+						),
+					array(
+					    'id' => $api['api_id']
+						)
+					);
+				$wpdb->update(
+					$table_name_social,
+					array(
+						'time' => current_time('mysql'),
+						'social_api_name' => $api['api_name'] ? $api['api_name'] : $default['api_name'],
+						'social_api_key' => $api['api_key'] ? $api['api_key'] : $default['api_key'],
+						'social_api_secret' => $api['api_secret'] ? $api['api_secret'] : $default['api_secret']
+						),
+					array(
+						'social_api_name' => $api['api_name_orig']
+						)
+					);
+		    }
+		    elseif (isset($social['edit_social'])) {
+		    	error_log(print_r($social,true));
+		    }
+    // elseif (isset($_POST[$admin_api]['delete_item']) && $_POST[$admin_api]['delete_item'] === 'true') {
 	// $wpdb->delete(
 	//     $table_name_api,
 	// 	array(

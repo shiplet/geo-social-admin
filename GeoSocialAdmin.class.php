@@ -116,6 +116,7 @@ class Geo_Social_Admin {
             social_url longtext NOT NULL,
             social_api_key mediumtext NOT NULL,
             social_api_secret mediumtext NOT NULL,
+            social_api_name text NOT NULL,
             UNIQUE KEY id (id)
             ) $charset_collate;";
 
@@ -164,7 +165,8 @@ class Geo_Social_Admin {
                     'social_geo' => 'general_test',
                     'social_url' => 'The api reference URL or RSS feed',
                     'social_api_key' => 'The associated API key',
-                    'social_api_secret' => 'The associated API secret'
+                    'social_api_secret' => 'The associated API secret',
+                    'social_api_name' => 'The associated API name'
                     )
                 );
         };
@@ -309,30 +311,34 @@ public function api_list()
 {
     global $wpdb;
     $api = $this->get_api_fields();
+    $table_name_api = $this->get_api_table();
     echo '<div class="api-results-box">';
     echo '<h3 class="geo-admin-section-header">APIs</h3>';
-    foreach($api as $i) {
-        $key = substr($i['api_key'], -4);
-        $secret = substr($i['api_secret'], -4);
-        echo '<div class="geo-admin-section-body">';
-        echo '<p><span>Name:</span> ' . $i['api_name'] . '</p>';
-        echo '<p><span>Key:</span> *** ' . $key . '</p>';
-        echo '<p><span>Secret:</span> *** ' . $secret . '</p>';
-        echo '<input type="hidden" data-model="api" data-index="' . $i['id'] . '"/>';
-        echo '<a href="#" class="apiEdit">Edit</a> | <a class="apiDelete" href="#">Delete</a>';
+        echo '<div id="api-list">';
+        foreach($api as $i) {
+            $key = substr($i['api_key'], -4);
+            $secret = substr($i['api_secret'], -4);
+            echo '<div class="geo-admin-section-body">';
+            echo '<p class="api-names"><span>Name:</span> ' . $i['api_name'] . '</p>';
+            echo '<p><span>Key:</span> *** ' . $key . '</p>';
+            echo '<p><span>Secret:</span> *** ' . $secret . '</p>';
+            echo '<input type="hidden" data-model="api" data-index="' . $i['id'] . '"/>';
+            echo '<a href="#" class="apiEdit">Edit</a> | <a class="apiDelete" href="#">Delete</a>';
+            echo '</div>';
+        }
         echo '</div>';
-    }
     echo '</div>';
 
     $social_feed = $this->get_social_fields();
-    echo '<div class="api-results-box">';
+    echo '<div id="social-list" class="api-results-box">';
     echo '<h3 class="geo-admin-section-header">Social Feeds</h3>';
-    foreach($social_feed as $i) {
+    foreach($social_feed as $j) {
         echo '<div class="geo-admin-section-body">';
-        echo '<p><span>Name:</span> ' . $i['social_title'] . '</p>';
-        echo '<p><span>URL:</span> ' . $i['social_url'] . '</p>';
-        echo '<p><span>Source:</span> ' . $i['social_source'] . '</p>';
-        echo '<input type="hidden" data-model="social" data-index="' . $i['id'] . '"/>';
+        echo '<p><span>Name:</span> ' . $j['social_title'] . '</p>';
+        echo '<p><span>URL:</span> ' . $j['social_url'] . '</p>';
+        echo '<p><span>Source:</span> ' . $j['social_source'] . '</p>';
+        echo '<p><span>Associated API: </span> ' . $j['social_api_name'] . '</p>';
+        echo '<input type="hidden" data-model="social" data-index="' . $j['id'] . '"/>';
         echo '<a href="#" class="apiEdit">Edit</a> | <a href="#" class="apiDelete">Delete</a>';
         echo '</div>';
     }
