@@ -15,7 +15,6 @@
  */
 
 ini_set("log_errors", 1);
-ini_set("error_log", "/var/log/php_error");
 ini_set("date.timezone", "America/Denver");
 
 // Include the class
@@ -72,7 +71,6 @@ switch($_SERVER['REQUEST_METHOD'])
 			// INTENT: Add either a new social stream AND a new API - OR - just a new API //
 
 			if ($_POST['admin_api_valid'] === 'true') {
-				error_log('Submitting from all new');
 				$wpdb->insert(
 					$table_name_api,
 					array(
@@ -87,7 +85,7 @@ switch($_SERVER['REQUEST_METHOD'])
 						$table_name_social,
 						array(
 							'time' => current_time('mysql'),
-							'social_source' => $social['social_source'] ? $social['social_source'] : null,
+							'social_source' => $social['social_source'] ? strtolower($social['social_source']) : null,
 							'social_title' => $social['social_title'] ? $social['social_title'] : null,
 							'social_url' => $social['social_url'] ? $social['social_url'] : null,
 							'social_geo' => $admin_geo_tag ? $admin_geo_tag : null,
@@ -104,14 +102,13 @@ switch($_SERVER['REQUEST_METHOD'])
 	    	// Intent: Add just a new social stream with pre-existing API //
 
 		    else if (!isset($_POST['admin_api_valid']) && !isset($api['edit_api']) && !isset($social['edit_social']) && !isset($api['delete_item']) && !isset($social['delete_item'])) {
-		    	error_log('Submitting from simple social stream.');
 		    	$social_api = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $social['api'], ARRAY_A);
 
 		    	$wpdb->insert(
 		    		$table_name_social,
 		    		array(
 		    			'time' => current_time('mysql'),
-		    			'social_source' => $social['social_source'],
+		    			'social_source' => strtolower($social['social_source']),
 		    			'social_title' => $social['social_title'],
 		    			'social_url' => $social['social_url'],
 		    			'social_geo' => $admin_geo_tag,
@@ -127,9 +124,7 @@ switch($_SERVER['REQUEST_METHOD'])
 		    // Intent: edit a pre-existing API //
 
 		    elseif (isset($api['edit_api']) && $api['edit_api'] === 'true') {
-		    	error_log('Submitting from edit_api');
 		    	$default_api = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE id = ' . $api['api_id'], ARRAY_A);
-		    	error_log(print_r($default,true));
 				$wpdb->update(
 				    $table_name_api,
 					array(
@@ -160,8 +155,6 @@ switch($_SERVER['REQUEST_METHOD'])
 		    // Intent: Edit a pre-existing social stream and associated API //
 
 		    elseif (isset($social['edit_social']) && $social['edit_social'] === 'true') {
-		    	error_log('Submitting from edit_social');
-		    	error_log(print_r($social,true));
 		    	$default_social = $wpdb->get_row('SELECT * FROM ' . $table_name_social . ' WHERE id = ' . $social['social_id'], ARRAY_A);
 		    	if ($social['api_name']) {
 		    		$newApi = $wpdb->get_row('SELECT * FROM ' . $table_name_api . ' WHERE api_name = "' . $social['api_name'] . '"', ARRAY_A);
@@ -170,7 +163,7 @@ switch($_SERVER['REQUEST_METHOD'])
 		    		$table_name_social,
 		    		array(
 		    			'time' => current_time('mysql'),
-		    			'social_source' => $social['social_source'] ? $social['social_source'] : $default_social['social_source'],
+		    			'social_source' => $social['social_source'] ? strtolower($social['social_source']) : strtolower($default_social['social_source']),
 		    			'social_url' => $social['social_url'] ? $social['social_url'] : $default_social['social_url'],
 		    			'social_content_type' => $social['social_url'] ? $social['social_content_type'] : $default_social['social_content_type'],
 		    			'social_title' => $social['social_title'] ? $social['social_title'] : $default_social['social_title'],
