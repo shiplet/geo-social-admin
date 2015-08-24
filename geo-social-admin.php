@@ -129,9 +129,9 @@ switch($_SERVER['REQUEST_METHOD'])
 				    $table_name_api,
 					array(
 					    'time' => current_time('mysql'),
-						'api_name' => $api['api_name'] ? $api['api_name'] : $default['api_name'],
-						'api_key' => $api['api_key'] ? $api['api_key'] : $default['api_key'],
-						'api_secret' => $api['api_secret'] ? $api['api_secret'] : $default['api_secret']
+						'api_name' => $api['api_name'] ? $api['api_name'] : $default_api['api_name'],
+						'api_key' => $api['api_key'] ? $api['api_key'] : $default_api['api_key'],
+						'api_secret' => $api['api_secret'] ? $api['api_secret'] : $default_api['api_secret']
 						),
 					array(
 					    'id' => $api['api_id']
@@ -141,9 +141,9 @@ switch($_SERVER['REQUEST_METHOD'])
 					$table_name_social,
 					array(
 						'time' => current_time('mysql'),
-						'social_api_name' => $api['api_name'] ? $api['api_name'] : $default['api_name'],
-						'social_api_key' => $api['api_key'] ? $api['api_key'] : $default['api_key'],
-						'social_api_secret' => $api['api_secret'] ? $api['api_secret'] : $default['api_secret']
+						'social_api_name' => $api['api_name'] ? $api['api_name'] : $default_social['api_name'],
+						'social_api_key' => $api['api_key'] ? $api['api_key'] : $default_social['api_key'],
+						'social_api_secret' => $api['api_secret'] ? $api['api_secret'] : $default_social['api_secret']
 						),
 					array(
 						'social_api_name' => $api['api_name_orig']
